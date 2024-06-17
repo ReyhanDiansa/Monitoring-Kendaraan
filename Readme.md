@@ -29,6 +29,7 @@ Fitur:
 - Terdapat Tampilan beberapa data yang perlu di approve pada dashboard user yang menandakan ada data data yang perlu di approve
 - CRUD driver, user, transport, fuel consumption, service schedule, usage request, dan usage histories
 - Export Data to Excel in FE
+- 2 Role yaitu Admin dan User(Approver)
 
 ## Backend (Laravel)
 

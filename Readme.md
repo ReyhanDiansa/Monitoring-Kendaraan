@@ -108,3 +108,9 @@ Install package with npm
 - next version `14.2.4`
 - node version `v20.11.0`
 - npm version `10.2.4`
+
+## Contact
+
+Reyhan Marsalino Diansa - [@reyhanmd._](https://instagram.com/reyhanmd._) - reyhandiansa@gmail.com
+
+Project Link: [https://github.com/reyhandiansa/Monitoring-Kendaraan](https://github.com/ReyhanDiansa/Monitoring-Kendaraan)

@@ -22,14 +22,27 @@
 - Setelah selesai menggunakan kendaraan dan memarkir, driver wajib memfoto info jumlah BBM pada kendaraan, setelah itu driver harus mengembalikan kunci kendaraan dan melaporkan sisa BBM pada admin dengan menunjukkan bukti foto
 - Admin akan melakukan pelaporan jumlah BBM, yang otomatis berarti `usage_status` menjadi sudah_digunakan dan laporan tercatat di halaman History `/admin/usage-histories`
 
-Fitur:
+#### Fitur
 - Terdapat Grafik Pemakaian Kendaraan pertanggal dan perbulan di dashboard admin dan user
 - Terdapat Grafik Pemakaian BBM pertanggal dan perbulan di dashboard admin dan user
 - Terdapat Info Kendaraan yang perlu diservis hari ini di dashboard admin dan user
 - Terdapat Tampilan beberapa data yang perlu di approve pada dashboard user yang menandakan ada data data yang perlu di approve
 - CRUD driver, user, transport, fuel consumption, service schedule, usage request, dan usage histories
 - Export Data to Excel in FE
-- 2 Role yaitu Admin dan User(Approver)
+
+#### Email and Password for Login
+- Email: `admin@mail.com`
+  Password: `Oke123`
+- Email: `user1@mail.com`
+  Password: `Oke123`
+- Email: `user2@mail.com`
+  Password: `Oke123`
+- Email: `user3@mail.com`
+  Password: `Oke123`
+- Email: `user4@mail.com`
+  Password: `Oke123`
+- Email: `user5@mail.com`
+  Password: `Oke123`
 
 ## Backend (Laravel)
 
@@ -50,33 +63,22 @@ Install package with composer
 - import database dengan nama `monitoring-kendaraan`
 - untuk menjalankan project run `php artisan serve` 
 - hit api dengan base url http://localhost:8000/api
-- To make things easier, please import the postman collection and run it in postman
 
-
-### Email and Password for Login
-- Email: `admin@mail.com`
-  Password: `Oke123`
-- Email: `user1@mail.com`
-  Password: `Oke123`
-- Email: `user2@mail.com`
-  Password: `Oke123`
-- Email: `user3@mail.com`
-  Password: `Oke123`
-- Email: `user4@mail.com`
-  Password: `Oke123`
-- Email: `user5@mail.com`
-  Password: `Oke123`
+#### Built with
+- Carbon
+- Sanctum
 
 #### Version Info
 - php version `8.2.16`
 - laravel version `9.19`
 - MySQL or DB version `10.4.27-MariaDB`
 
-
-
+-----------
+-----------
+-----------
 ## Frontend (Nextjs)
 
-## Installation
+### Installation
 
 Install package with npm
 
@@ -84,37 +86,26 @@ Install package with npm
   npm install 
 ```
     
-## Usage
+### Usage
 
-### how to run in local
+#### how to run in local
 - clone project
 - masuk ke project run `npm install` diterminal untuk menginstall package
 - buat file .env lalu copy isi .env.example ke file.env
 - untuk menjalankan project run `npm start` 
 - buka browser dan ketikkan url http://localhost:3000
 
-### Email and Password for Login
-- Email: `admin@mail.com`
-  Password: `Oke123`
-- Email: `user1@mail.com`
-  Password: `Oke123`
-- Email: `user2@mail.com`
-  Password: `Oke123`
-- Email: `user3@mail.com`
-  Password: `Oke123`
-- Email: `user4@mail.com`
-  Password: `Oke123`
-- Email: `user5@mail.com`
-  Password: `Oke123`
+#### Built with
+- Axios
+- js-cookie
+- react-chartjs-2
+- react-datepicker
+- react-icons
+- react-select
+- sweetalert2
+- xlsx
 
 #### Version Info
 - next version `14.2.4`
 - node version `v20.11.0`
 - npm version `10.2.4`
-
-
-## Contact
-
-Reyhan Marsalino Diansa - [@reyhanmd._](https://instagram.com/reyhanmd._) - reyhandiansa@gmail.com
-
-Project Link: [https://github.com/reyhandiansa/Monitoring-Kendaraan](https://github.com/ReyhanDiansa/Monitoring-Kendaraan)

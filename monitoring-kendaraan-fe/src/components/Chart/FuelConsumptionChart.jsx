@@ -24,7 +24,7 @@ const LineChart = ({ apiUrl, label }) => {
           datasets: [
             {
               fill: true,
-              label: `Jumlah Pemakaian BBM`,
+              label: `Jumlah Konsumsi BBM`,
               lineTension: 0.1,
               backgroundColor: "#FF7A7F",
               borderColor: "#81171b",
@@ -56,7 +56,7 @@ const LineChart = ({ apiUrl, label }) => {
             },
             title: {
               display: true,
-              text: `Jumlah Pemakaian BBM`,
+              text: `Jumlah Konsumsi BBM`,
             },
           },
           scales: {

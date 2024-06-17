@@ -1,7 +1,12 @@
-import Image from "next/image";
+"use client"
 
-export default function Home() {
+import Image from "next/image";
+import withAuth from "../utils/withAuth"
+
+const Home=() =>{
   return (
 <div></div>
   );
 }
+
+export default withAuth(Home);

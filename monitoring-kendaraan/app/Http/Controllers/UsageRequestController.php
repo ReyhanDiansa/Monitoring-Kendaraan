@@ -86,6 +86,9 @@ class UsageRequestController extends BaseController
                 'usage_description' => $request->usage_description,
             ];
 
+            if (count($request->approvers) < 2) {
+                return $this->sendError('minimum 2 levels of approval');
+            }
 
             $usageRequest = UsageRequest::create($data);
 
@@ -395,14 +398,14 @@ class UsageRequestController extends BaseController
 
             if (isset($keyword) && !empty($keyword)) {
                 $query->where(function ($query) use ($keyword) {
-                        $query->where('usage_status', 'like', "%$keyword%")
-                            ->orWhere('request_status', 'like', "%$keyword%")
-                            ->orWhere('transport.name', 'like', "%$keyword%")
-                            ->orWhere('usage_start', 'like', "%$keyword%")
-                            ->orWhere('usage_description', 'like', "%$keyword%")
-                            ->orWhere('usage_final', 'like', "%$keyword%")
-                            ->orWhere('driver.name', 'like', "%$keyword%");
-                    });
+                    $query->where('usage_status', 'like', "%$keyword%")
+                        ->orWhere('request_status', 'like', "%$keyword%")
+                        ->orWhere('transport.name', 'like', "%$keyword%")
+                        ->orWhere('usage_start', 'like', "%$keyword%")
+                        ->orWhere('usage_description', 'like', "%$keyword%")
+                        ->orWhere('usage_final', 'like', "%$keyword%")
+                        ->orWhere('driver.name', 'like', "%$keyword%");
+                });
             }
 
             $query->select('usage_request.id', 'usage_request.transport_id', 'usage_request.driver_id',  'usage_request.usage_start', 'usage_request.usage_final', 'usage_request.usage_status', 'usage_request.usage_description', 'usage_request.request_status', 'usage_request.created_at',  'usage_request.updated_at')->orderBy('usage_request.usage_start', 'desc');
@@ -529,14 +532,14 @@ class UsageRequestController extends BaseController
 
             if (isset($keyword) && !empty($keyword)) {
                 $query->where(function ($query) use ($keyword) {
-                        $query->where('usage_status', 'like', "%$keyword%")
-                            ->orWhere('request_status', 'like', "%$keyword%")
-                            ->orWhere('transport.name', 'like', "%$keyword%")
-                            ->orWhere('usage_start', 'like', "%$keyword%")
-                            ->orWhere('usage_description', 'like', "%$keyword%")
-                            ->orWhere('usage_final', 'like', "%$keyword%")
-                            ->orWhere('driver.name', 'like', "%$keyword%");
-                    });
+                    $query->where('usage_status', 'like', "%$keyword%")
+                        ->orWhere('request_status', 'like', "%$keyword%")
+                        ->orWhere('transport.name', 'like', "%$keyword%")
+                        ->orWhere('usage_start', 'like', "%$keyword%")
+                        ->orWhere('usage_description', 'like', "%$keyword%")
+                        ->orWhere('usage_final', 'like', "%$keyword%")
+                        ->orWhere('driver.name', 'like', "%$keyword%");
+                });
             }
 
             $query->select('usage_request.id', 'usage_request.transport_id', 'usage_request.driver_id',  'usage_request.usage_start', 'usage_request.usage_final', 'usage_request.usage_status', 'usage_request.usage_description', 'usage_request.request_status', 'usage_request.created_at',  'usage_request.updated_at')->orderBy('usage_request.usage_start', 'desc');
@@ -552,5 +555,4 @@ class UsageRequestController extends BaseController
             return $this->sendError('An error occurred while exporting Usage Request.: ' . $e->getMessage(), null, 500);
         }
     }
-
 }

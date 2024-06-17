@@ -73,9 +73,8 @@ Install package with composer
 - laravel version `9.19`
 - MySQL or DB version `10.4.27-MariaDB`
 
------------
------------
------------
+-----------------
+
 ## Frontend (Nextjs)
 
 ### Installation

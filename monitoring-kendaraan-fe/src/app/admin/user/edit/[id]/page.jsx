@@ -10,7 +10,7 @@ const EditUserPage = () => {
 
   return (
     <Layout>
-      <UserForm id={Number(id)} />;
+      <UserForm id={Number(id)} />
     </Layout>
   );
 };

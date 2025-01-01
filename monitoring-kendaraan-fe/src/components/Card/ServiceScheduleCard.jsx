@@ -16,7 +16,9 @@ const Dashboard = () => {
         );
         setServiceSchedules(response.data.data.data);
       } catch (err) {
-        setError("Failed to load service schedules");
+        if (err?.response.status !== 404) {
+          setError("Failed to load service schedules");
+        }
       } finally {
         setLoading(false);
       }
@@ -29,14 +31,16 @@ const Dashboard = () => {
     return <p className="text-center my-2">Loading...</p>;
   }
 
-  if (error) {
-    return <p>{error}</p>;
-  }
+  // if (error) {
+  //   return <p>{error}</p>;
+  // }
 
   return (
     <div className="w-full mx-auto my-5">
       <div className="w-full">
-        <h1 className="text-2xl font-bold mb-4 text-center">Today's Service Schedule</h1>
+        <h1 className="text-2xl font-bold mb-4 text-center">
+          Today's Service Schedule
+        </h1>
         <div className="flex gap-2 justify-center">
           {serviceSchedules.length > 0 ? (
             serviceSchedules.map((schedule) => (
@@ -47,7 +51,10 @@ const Dashboard = () => {
               />
             ))
           ) : (
-            <p className="text-center">No service schedules for today.</p>
+            <p className="text-center">
+              {" "}
+              {error ? { error } : "No service schedules for today."}
+            </p>
           )}
         </div>
       </div>

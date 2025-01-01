@@ -31,10 +31,6 @@ const Dashboard = () => {
     return <p className="text-center my-2">Loading...</p>;
   }
 
-  // if (error) {
-  //   return <p>{error}</p>;
-  // }
-
   return (
     <div className="w-full mx-auto my-5">
       <div className="w-full">

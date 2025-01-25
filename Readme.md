@@ -12,13 +12,13 @@
   - approver (minimal 2)
 
 - Driver harus menunggu approver untuk approve/reject
-- Data yang perlu di approve/reject akan muncul di dashboard approver
+- Data yang perlu di approve akan muncul di dashboard approver
 - Approver bisa melakukan approve/reject di halaman `/user/usage-request`
 - Approver ke 2 dan seterusnya tidak dapat approve jika approver pertama atau sebelum dia belum melakukan approve
-- Jika Approver tingkat 1 atau tingkat sebelum dia tidak meng-approve / me-reject, maka dia atau approver selanjutnya tidak dapat melakukan approve dan dianggap request itu telah tertolak begitu juga jika salah satu approver me-reject maka request dianggap ditolak
+- Jika Approver tingkat 1 atau tingkat sebelum dia tidak meng-approve / me-reject, maka approver selanjutnya tidak dapat melakukan approve dan dianggap request itu telah tertolak begitu juga jika salah satu approver me-reject maka request dianggap ditolak
 - Admin akan secara berkala mengecek apakah status request sudah berubah atau belum, jika sudah maka admin wajib mengonfirmasi kepada driver 
 - Jika di approve maka driver akan menuju bagian admin kembali untuk mengambil kunci dan melaporkan bahwa kendaraan akan digunakan
-- Admin akan mengubah `usage_status` yang sebelumnya belum_digunakan menjadi sudah_digunakan
+- Admin akan mengubah `usage_status` yang sebelumnya belum_digunakan menjadi sedang_digunakan
 - Setelah selesai menggunakan kendaraan dan memarkir, driver wajib memfoto info jumlah BBM pada kendaraan, setelah itu driver harus mengembalikan kunci kendaraan dan melaporkan sisa BBM pada admin dengan menunjukkan bukti foto
 - Admin akan melakukan pelaporan jumlah BBM, yang otomatis berarti `usage_status` menjadi sudah_digunakan dan laporan tercatat di halaman History `/admin/usage-histories`
 

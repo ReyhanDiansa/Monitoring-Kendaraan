@@ -2,12 +2,14 @@
 
 import React, { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import 'sweetalert2/src/sweetalert2.scss';
 import api from '../../utils/axios';
 import Select from 'react-select';
 
-const UsageRequestForm = ({ id }) => {
+const UsageRequestForm = () => {
+    const { id } = useParams();
+
     const [usageRequestItem, setUsageRequestItem] = useState({
         usage_description: '',
         usage_start: '',

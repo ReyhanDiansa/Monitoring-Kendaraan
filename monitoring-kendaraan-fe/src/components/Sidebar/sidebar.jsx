@@ -1,6 +1,6 @@
 // components/Sidebar.js
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { MenuItem, MenuItemUser } from "./MenuItem";
 import { BiLogOut } from "react-icons/bi";
 import { removeTokenCookie, getTokenCookie } from "../../utils/handleCookie";
@@ -13,7 +13,7 @@ const Sidebar = ({ isOpen }) => {
   const router = useRouter();
   const [token, setToken] = useState("");
   const [userData, setUserData] = useState({});
-
+  const pathname = usePathname();
 
   const getProfile = async () => {
     const userProfile = await api.get("/api/me");
@@ -32,6 +32,14 @@ const Sidebar = ({ isOpen }) => {
       toast.error(error);
     }
   };
+
+  const isActive = (item) => {
+    return (
+      (item.link === "/" && pathname === "/") ||
+      (item.link !== "/" && item.path.some((path) => pathname.startsWith(path)))
+    );
+  };
+
   return (
     <>
       <ToastContainer />
@@ -50,55 +58,38 @@ const Sidebar = ({ isOpen }) => {
               </div>
             </div>
           </div>
+
           <ul>
-            {userData.role === "admin"
-              ? MenuItem.map((item) => (
+            {(userData.role === "admin" ? MenuItem : MenuItemUser).map(
+              (item) => {
+                return (
                   <li key={item.link}>
                     <a
                       href={item.link}
-                      className={`hover:bg-orange-300 flex gap-2 my-3 p-4 items-center ${
+                      className={` flex gap-2 my-3 p-4 items-center ${
                         (item.link === "/admin" &&
-                          router.asPath === "/admin") ||
-                        (item.path &&
-                          item.path.some(
-                            (path) =>
-                              router.asPath && router.asPath.startsWith(path)
+                          pathname === "/admin") ||
+                          (item.link === "/user" &&
+                            pathname === "/user") ||
+                        (item.link !== "/admin" && item.link !== "/user" &&
+                          item.path.some((path) =>
+                           pathname.startsWith(path)
                           ))
-                          ? "bg-[#b62024] text-white hover-bg-[#b62024]"
-                          : "hover:bg-[#d51f2551]"
+                          ? "bg-orange-500 text-white "
+                          : "hover:bg-orange-300"
                       }`}
                     >
                       {item.icon}
                       <span>{item.name}</span>
                     </a>
                   </li>
-                ))
-              : MenuItemUser.map((item) => (
-                  <li key={item.link}>
-                    <a
-                      href={item.link}
-                      className={`hover:bg-orange-300 flex gap-2 my-3 p-4 items-center ${
-                        (item.link === "/admin" &&
-                          router.asPath === "/admin") ||
-                        (item.path &&
-                          item.path.some(
-                            (path) =>
-                              router.asPath && router.asPath.startsWith(path)
-                          ))
-                          ? "bg-[#b62024] text-white hover-bg-[#b62024]"
-                          : "hover:bg-[#d51f2551]"
-                      }`}
-                    >
-                      {item.icon}
-                      <span>{item.name}</span>
-                    </a>
-                  </li>
-                ))}
+                );
+              }
+            )}
 
             <li>
               <div
-                className={` flex gap-2 my-3 p-4 items-center 
-                   hover:bg-orange-300 cursor-pointer`}
+                className="flex gap-2 my-3 p-4 items-center hover:bg-orange-300 cursor-pointer"
                 onClick={handleLogOut}
               >
                 <BiLogOut />

@@ -49,7 +49,7 @@ const Dashboard = () => {
           ) : (
             <p className="text-center">
               {" "}
-              {error ? { error } : "No service schedules for today."}
+              {error ?  error  : "No service schedules for today."}
             </p>
           )}
         </div>

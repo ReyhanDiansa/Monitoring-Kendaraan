@@ -9,6 +9,7 @@ use App\Models\UserRequest;
 use App\Models\UserRequestDetail;
 use App\Models\UsageRequest;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class UsageRequestController extends BaseController
 {
@@ -258,12 +259,9 @@ class UsageRequestController extends BaseController
                 return $this->sendError('There is no request for you to approve / approver before you have not or did not approve', null, 400);
             }
 
-            $usageRequest = UsageRequest::select('usage_request.id', 'usage_request.transport_id', 'usage_request.driver_id',  'usage_request.usage_start', 'usage_request.usage_final', 'usage_request.usage_description', 'usage_request.created_at',  'usage_request.updated_at')->with([
-                'detail' => function ($query) use ($approverId) {
-                    $query->where('approver_id', $approverId);
-                },
-                'detail.approver', 'transport', 'driver'
-            ])->where('id', $requestId)->first();
+            $usageRequest = UsageRequest::select('usage_request.id', 'usage_request.transport_id', 'usage_request.driver_id',  'usage_request.usage_start', 'usage_request.usage_final', 'usage_request.usage_description', 'usage_request.created_at',  'usage_request.updated_at')->whereHas('detail', function ($query) use ($approverId) {
+                $query->where('approver_id', $approverId);
+            })->with(['detail.approver', 'transport', 'driver'])->where('id', $requestId)->first();
 
             return $this->sendResponse($usageRequest, 'Successfully get Usage Request Data.');
         } catch (\Exception $e) {
@@ -422,37 +420,46 @@ class UsageRequestController extends BaseController
         }
     }
 
-    public function getAllForApprover()
+    public function getAllForApprover(Request $request)
     {
         try {
             $approverId = auth()->id();
+            $isPending = $request->is_pending;
 
-            $findUserRequest = RequestDetail::select('request_detail.id')->where('approver_id', $approverId)->first();
+            $findUserRequest = RequestDetail::where('approver_id', $approverId)
+                ->select('request_detail.id', 'request_detail.request_id')
+                ->get();
 
-            if (!$findUserRequest) {
-                return $this->sendError('Usage Request with that approver is not found', null, 400);
+            if ($findUserRequest->isEmpty()) {
+                return $this->sendError('Usage Request with that approver is not found', null, 404);
             }
 
-            $previousApproval = RequestDetail::where('id', '<', $findUserRequest->id)
-                ->orderBy('id', 'desc')
-                ->first();
+            $requestIds = $findUserRequest->filter(function ($item) {
+                $previousApproval = RequestDetail::where('id', '<', $item->id)
+                    ->where('request_id', $item->request_id)
+                    ->orderBy('id', 'desc')
+                    ->first();
 
-            if ($previousApproval !== null && $previousApproval['status'] !== 'approve') {
-                return $this->sendError('There is no request for you to approve / approver before you have not or did not approve', null, 400);
-            }
+                return is_null($previousApproval) || $previousApproval->status !== 'pending';
+            })->pluck('request_id');
 
-            $usageRequest = UsageRequest::select('usage_request.id', 'usage_request.transport_id', 'usage_request.driver_id',  'usage_request.usage_start', 'usage_request.usage_final', 'usage_request.usage_description', 'usage_request.usage_status', 'usage_request.request_status', 'usage_request.created_at',  'usage_request.updated_at')->with([
-                'detail' => function ($query) use ($approverId) {
+            $usageRequest = UsageRequest::with(['detail.approver', 'transport', 'driver'])
+                ->whereHas('detail', function ($query) use ($approverId) {
                     $query->where('approver_id', $approverId);
-                },
-                'detail.approver', 'transport', 'driver'
-            ])->orderBy('usage_request.usage_start', 'desc')->paginate();
+                })
+                ->when($isPending, function ($query) {
+                    $query->where('usage_request.request_status', 'pending');
+                })
+                ->whereIn('usage_request.id', $requestIds)
+                ->orderBy('usage_request.usage_start', 'desc')
+                ->paginate();
 
             return $this->sendResponse($usageRequest, 'Successfully get Usage Request Data.');
         } catch (\Exception $e) {
-            return response()->json(['error' => 'An error occurred while deleting user request: ' . $e->getMessage()], 500);
+            return response()->json(['error' => 'An error occurred while fetching user request: ' . $e->getMessage()], 500);
         }
     }
+
 
     public function filterDataForApprover($keyword)
     {
@@ -460,7 +467,6 @@ class UsageRequestController extends BaseController
             $approverId = auth()->id();
 
             $findUserRequest = RequestDetail::select('request_detail.id')->where('approver_id', $approverId)->first();
-
             if (!$findUserRequest) {
                 return $this->sendError('Usage Request with that approver is not found', null, 400);
             }
@@ -489,7 +495,10 @@ class UsageRequestController extends BaseController
                     'detail' => function ($query) use ($approverId) {
                         $query->where('approver_id', $approverId);
                     },
-                    'detail.approver', 'transport', 'driver', 'history'
+                    'detail.approver',
+                    'transport',
+                    'driver',
+                    'history'
                 ])
                 ->select('usage_request.id', 'usage_request.transport_id', 'usage_request.driver_id',  'usage_request.usage_start', 'usage_request.usage_final', 'usage_request.usage_status', 'usage_request.usage_description', 'usage_request.request_status', 'usage_request.created_at',  'usage_request.updated_at')
                 ->orderBy('usage_request.usage_start', 'desc')->paginate();
@@ -526,7 +535,10 @@ class UsageRequestController extends BaseController
                     'detail' => function ($query) use ($approverId) {
                         $query->where('approver_id', $approverId);
                     },
-                    'detail.approver', 'transport', 'driver', 'history'
+                    'detail.approver',
+                    'transport',
+                    'driver',
+                    'history'
                 ])->leftJoin('transport', 'usage_request.transport_id', '=', 'transport.id')
                 ->leftJoin('driver', 'usage_request.driver_id', '=', 'driver.id');
 

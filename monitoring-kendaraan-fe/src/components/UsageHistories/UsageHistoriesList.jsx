@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useEffect, useState, useCallback } from "react";
 import Swal from "sweetalert2";
@@ -7,14 +7,12 @@ import api from "../../utils/axios";
 import Spinner from "../Loading/SpinnerLoading";
 import * as XLSX from "xlsx";
 
-
 const UsageHistoryList = () => {
   const [usageHistories, setUsageHistories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  
 
   const fetchUsageHistories = useCallback(
     async (page) => {
@@ -38,9 +36,12 @@ const UsageHistoryList = () => {
 
   const searchUsageHistories = async (keyword, page) => {
     try {
-      const response = await api.post(`/api/usage-histories/filter/${keyword}`, { page });
+      const response = await api.post(
+        `/api/usage-histories/filter/${keyword}`,
+        { page }
+      );
       setUsageHistories(response.data.data.data);
-          setTotalPages(response.data.data.last_page);
+      setTotalPages(response.data.data.last_page);
       setLoading(false);
     } catch (error) {
       console.error("Failed to fetch usage histories", error);
@@ -76,38 +77,56 @@ const UsageHistoryList = () => {
     );
   }
 
-  const nameExport = 'Usage History Data';
+  const nameExport = "Usage History Data";
 
   const exportData = async () => {
     let keyword = searchQuery;
-    let url = '/api/usage-histories/get-data/for-export';
-    if (keyword !== '') {
+    let url = "/api/usage-histories/get-data/for-export";
+    if (keyword !== "") {
       url += `?keyword=${keyword}`;
     }
     try {
       const res = await api.post(url);
       console.log(res.data.data.data);
       const arrData = res.data.data.data?.map((element) => ({
-        'Driver Name': element.usage_request.driver?.name ? element.usage_request.driver?.name : '-',
-        'Transport Name': element.usage_request.transport?.name ? element.usage_request.transport?.name : '-',
-        'Description': element.usage_request.usage_description ?  element.usage_request.usage_description : '-',
-        'Start Pemakaian': element.usage_request.usage_start ?  element.usage_request.usage_start : '-',
-        'Akhir Pemakaian': element.usage_request.usage_final ?  element.usage_request.usage_final : '-',
-        'Status Pemakaian': element.usage_request.usage_status ?  element.usage_request.usage_status : '-',
-        'Request Status': element.usage_request.request_status ?  element.usage_request.request_status : '-',
-        'Jumlah Awal BBM': element.fuel.start_amount ?  element.fuel.start_amount : '-',
-        'Jumlah Akhir BBM': element.fuel.final_amount ?  element.fuel.final_amount : '-',
+        "Driver Name": element.usage_request.driver?.name
+          ? element.usage_request.driver?.name
+          : "-",
+        "Transport Name": element.usage_request.transport?.name
+          ? element.usage_request.transport?.name
+          : "-",
+        Description: element.usage_request.usage_description
+          ? element.usage_request.usage_description
+          : "-",
+        "Start Pemakaian": element.usage_request.usage_start
+          ? element.usage_request.usage_start
+          : "-",
+        "Akhir Pemakaian": element.usage_request.usage_final
+          ? element.usage_request.usage_final
+          : "-",
+        "Status Pemakaian": element.usage_request.usage_status
+          ? element.usage_request.usage_status
+          : "-",
+        "Request Status": element.usage_request.request_status
+          ? element.usage_request.request_status
+          : "-",
+        "Jumlah Awal BBM": element.fuel.start_amount
+          ? element.fuel.start_amount
+          : "-",
+        "Jumlah Akhir BBM": element.fuel.final_amount
+          ? element.fuel.final_amount
+          : "-",
       }));
       const workbook = XLSX.utils.book_new();
-        const worksheet = XLSX.utils?.json_to_sheet(arrData);
-        XLSX.utils.book_append_sheet(workbook, worksheet, nameExport);
-        XLSX.writeFile(workbook, `${nameExport}.xlsx`);
+      const worksheet = XLSX.utils?.json_to_sheet(arrData);
+      XLSX.utils.book_append_sheet(workbook, worksheet, nameExport);
+      XLSX.writeFile(workbook, `${nameExport}.xlsx`);
     } catch (err) {
-      console.error('Export data failed:', err);
+      console.error("Export data failed:", err);
       Swal.fire({
-        icon: 'error',
-        title: 'Failed',
-        text: 'Something went wrong!',
+        icon: "error",
+        title: "Failed",
+        text: "Something went wrong!",
       });
     }
   };
@@ -120,15 +139,18 @@ const UsageHistoryList = () => {
           class="p-4 mb-4 text-sm text-blue-800 rounded-lg bg-blue-100 dark:text-blue-400"
           role="alert"
         >
-          <p className="font-bold">Penambahan data Histori hanya bisa dilakukan saat pelaporan setelah pemakaian Kendaraan</p>
+          <p className="font-bold">
+            Penambahan data histori hanya dapat dilakukan setelah pelaporan
+            penggunaan kendaraan selesai.
+          </p>
         </div>
       </div>
       <button
-          className="bg-[#ff7400] hover:text-[#ff7400] hover:bg-white hover:ring-[#ff7400] hover:ring-2 focus:ring-4 focus:ring-[#ff7400] text-white px-4 py-2 my-3 rounded "
-          onClick={exportData}
-        >
-          Export Data
-        </button>
+        className="bg-[#ff7400] hover:text-[#ff7400] hover:bg-white hover:ring-[#ff7400] hover:ring-2 focus:ring-4 focus:ring-[#ff7400] text-white px-4 py-2 my-3 rounded "
+        onClick={exportData}
+      >
+        Export Data
+      </button>
       {usageHistories?.length === 0 ? (
         <p className="text-center text-gray-500">No data found</p>
       ) : (
@@ -159,7 +181,22 @@ const UsageHistoryList = () => {
               </button>
             )}
           </div>
-          <p className="mb-4 text-xs text-gray-600">Untuk melakukan export data periodik/data hasil filter anda bisa memasukkan keyword dengan contoh '2024-07' atau '2024-06-19'</p>
+          <p className="mb-4 text-xs text-gray-600">
+            Untuk melakukan export data periodik/data hasil filter anda bisa
+            memasukkan keyword dengan contoh '2024-07' atau '2024-06-19'
+          </p>
+          {usageHistories?.length > 0 && (
+            <ul className="mb-2">
+              <li className="text-xs text-gray-600">
+                <strong>*Start Amount:</strong> Menunjukkan jumlah bahan bakar
+                sebelum kendaraan dipakai.
+              </li>
+              <li className="text-xs text-gray-600">
+                <strong>*Final Amount:</strong> Menunjukkan jumlah bahan bakar
+                setelah kendaraan dipakai.
+              </li>
+            </ul>
+          )}
           <table className="w-full border-collapse">
             <thead>
               <tr className="bg-[#ff7400] text-white">
@@ -175,11 +212,21 @@ const UsageHistoryList = () => {
             <tbody>
               {usageHistories?.map((item) => (
                 <tr key={item.id}>
-                  <td className="border px-4 py-2">{item.usage_request.usage_start}</td>
-                  <td className="border px-4 py-2">{item.usage_request.usage_final}</td>
-                  <td className="border px-4 py-2">{item.usage_request.usage_description}</td>
-                  <td className="border px-4 py-2">{item.usage_request.transport.name}</td>
-                  <td className="border px-4 py-2">{item.usage_request.driver.name}</td>
+                  <td className="border px-4 py-2">
+                    {item.usage_request.usage_start}
+                  </td>
+                  <td className="border px-4 py-2">
+                    {item.usage_request.usage_final}
+                  </td>
+                  <td className="border px-4 py-2">
+                    {item.usage_request.usage_description}
+                  </td>
+                  <td className="border px-4 py-2">
+                    {item.usage_request.transport.name}
+                  </td>
+                  <td className="border px-4 py-2">
+                    {item.usage_request.driver.name}
+                  </td>
                   <td className="border px-4 py-2">{item.fuel.start_amount}</td>
                   <td className="border px-4 py-2">{item.fuel.final_amount}</td>
                 </tr>

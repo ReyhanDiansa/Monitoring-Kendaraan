@@ -10,7 +10,8 @@ import PelaporanPemakaianForm from "./PelaporanPemakaianModal";
 import UpdateUsageStatus from "./UpdateUsageStatus";
 import * as XLSX from "xlsx";
 import ApproveRejectForm from "./ApproveRejectModal";
-
+import axios from "axios";
+import { getTokenCookie } from "../../utils/handleCookie";
 
 const UsageRequestList = () => {
   const [usageRequests, setUsageRequests] = useState([]);
@@ -21,6 +22,7 @@ const UsageRequestList = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [userId, setUserId] = useState();
   const router = useRouter();
 
   const fetchUsageRequests = useCallback(
@@ -28,7 +30,21 @@ const UsageRequestList = () => {
       try {
         let response;
         if (searchQuery.trim() === "") {
-          response = await api.post(`/api/usage-request/approver/getAll?page=${page}`);
+          response = await api.post(
+            `/api/usage-request/approver/getAll?page=${page}`
+          );
+
+          const token = getTokenCookie();
+          const userProfile = await axios.get(
+            `${process.env.NEXT_PUBLIC_API}/api/me`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          setUserId(userProfile?.data?.data?.id);
+
           setUsageRequests(response.data.data.data);
           setTotalPages(response.data.data.last_page);
           setLoading(false);
@@ -45,11 +61,14 @@ const UsageRequestList = () => {
 
   const searchUsageRequests = async (keyword, page) => {
     try {
-      const response = await api.post(`/api/usage-request/filter/for-approver/${keyword}`, {
-        page,
-      });
+      const response = await api.post(
+        `/api/usage-request/filter/for-approver/${keyword}`,
+        {
+          page,
+        }
+      );
       setUsageRequests(response.data.data.data);
-          setTotalPages(response.data.data.last_page);
+      setTotalPages(response.data.data.last_page);
       setLoading(false);
     } catch (error) {
       console.error("Failed to fetch usage requests", error);
@@ -144,39 +163,49 @@ const UsageRequestList = () => {
     fetchUsageRequests(currentPage);
   };
 
-  const nameExport = 'Usage Request Data';
+  const nameExport = "Usage Request Data";
 
   const exportData = async () => {
     let keyword = searchQuery;
-    let url = '/api/usage-request/get-data/for-export/for-approver';
-    if (keyword !== '') {
+    let url = "/api/usage-request/get-data/for-export/for-approver";
+    if (keyword !== "") {
       url += `?keyword=${keyword}`;
     }
     try {
       const res = await api.post(url);
       console.log(res.data.data.data);
       const arrData = res.data.data.data?.map((element) => ({
-       'Driver Name': element.driver?.name ? element.driver?.name : '-',
-        'Transport Name': element.transport?.name? element.transport?.name : '-',
-        'Description': element.usage_description ?  element.usage_description : '-',
-        'Start Pemakaian': element.usage_start ?  element.usage_start : '-',
-        'Akhir Pemakaian': element.usage_final ?  element.usage_final : '-',
-        'Status Pemakaian': element.usage_status ?  element.usage_status : '-',
-        'Request Status': element.request_status ?  element.request_status : '-',
+        "Driver Name": element.driver?.name ? element.driver?.name : "-",
+        "Transport Name": element.transport?.name
+          ? element.transport?.name
+          : "-",
+        Description: element.usage_description
+          ? element.usage_description
+          : "-",
+        "Start Pemakaian": element.usage_start ? element.usage_start : "-",
+        "Akhir Pemakaian": element.usage_final ? element.usage_final : "-",
+        "Status Pemakaian": element.usage_status ? element.usage_status : "-",
+        "Request Status": element.request_status ? element.request_status : "-",
       }));
       const workbook = XLSX.utils.book_new();
-        const worksheet = XLSX.utils?.json_to_sheet(arrData);
-        XLSX.utils.book_append_sheet(workbook, worksheet, nameExport);
-        XLSX.writeFile(workbook, `${nameExport}.xlsx`);
+      const worksheet = XLSX.utils?.json_to_sheet(arrData);
+      XLSX.utils.book_append_sheet(workbook, worksheet, nameExport);
+      XLSX.writeFile(workbook, `${nameExport}.xlsx`);
     } catch (err) {
-      console.error('Export data failed:', err);
+      console.error("Export data failed:", err);
       Swal.fire({
-        icon: 'error',
-        title: 'Failed',
-        text: 'Something went wrong!',
+        icon: "error",
+        title: "Failed",
+        text: "Something went wrong!",
       });
     }
   };
+
+  const getCurrentUserStatus = (data) => {
+    const currentUser = data?.find((item) => item?.approver_id === userId);
+    return currentUser?.status || "N/A";
+  };
+
   return (
     <>
       <div className="container mx-auto p-4">
@@ -215,7 +244,29 @@ const UsageRequestList = () => {
             </button>
           )}
         </div>
-        <p className="mb-4 text-xs text-gray-600">Untuk melakukan export data periodik/data hasil filter anda bisa memasukkan keyword dengan contoh '2024-07' atau '2024-06-19'</p>
+        <p className="mb-3 text-xs text-gray-600">
+          Untuk melakukan export data periodik/data hasil filter anda bisa
+          memasukkan keyword dengan contoh '2024-07' atau '2024-06-19'
+        </p>
+        {usageRequests?.length > 0 && (
+          <ul className="mb-2">
+            <li className="text-xs text-gray-600">
+              <strong>*Usage Status:</strong> Menunjukkan status pemakaian  
+              kendaraan saat ini.
+            </li>
+            <li className="text-xs text-gray-600">
+              <strong>*Data Status:</strong> Status dari permintaan saat ini.
+              Jika salah satu approver menolak (reject), maka status akan
+              otomatis berubah menjadi "reject."
+            </li>
+            <li className="text-xs text-gray-600">
+              <strong>*Your Status:</strong> Menunjukkan keputusan Anda terhadap
+              permintaan ini, apakah Anda menyetujui (approve), menolak
+              (reject), atau belum mengambil tindakan (pending). Keputusan Anda
+              akan memengaruhi status keseluruhan permintaan.
+            </li>
+          </ul>
+        )}
         {usageRequests?.length === 0 ? (
           <p className="text-center text-gray-500">No data found</p>
         ) : (
@@ -229,7 +280,8 @@ const UsageRequestList = () => {
                   <th className="border px-4 py-2">Start Date</th>
                   <th className="border px-4 py-2">Final Date</th>
                   <th className="border px-4 py-2">Usage Status</th>
-                  <th className="border px-4 py-2">Status</th>
+                  <th className="border px-4 py-2">Data Status</th>
+                  <th className="border px-4 py-2">Your Status</th>
                   <th className="border px-4 py-2">Actions</th>
                 </tr>
               </thead>
@@ -245,11 +297,17 @@ const UsageRequestList = () => {
                     <td className="border px-4 py-2">{item.usage_final}</td>
                     <td className="border px-4 py-2">{item.usage_status}</td>
                     <td className="border px-4 py-2">{item.request_status}</td>
+                    <td className="border px-4 py-2">
+                      {getCurrentUserStatus(item?.detail)}
+                    </td>
                     <td className="border px-4 py-2 flex flex-col gap-2 items-center justify-center">
                       <div className="flex gap-2">
                         <button
                           className={`bg-[#ff7400] hover:text-[#ff7400] hover:bg-white hover:ring-[#ff7400] hover:ring-2 focus:ring-4 focus:ring-[#ff7400] text-white text-sm px-2 py-2 rounded mr-2 disabled:bg-[#ff73009f] disabled:hover:bg-none disabled:hover:ring-0 disabled:hover:text-white disabled:cursor-not-allowed`}
-                          disabled={item?.detail[0]?.status !== 'pending'}
+                          disabled={
+                            getCurrentUserStatus(item?.detail) !== "pending" ||
+                            item.request_status !== "pending"
+                          }
                           onClick={() => handleOpenModalLaporan(item.id)}
                         >
                           Approve/Reject

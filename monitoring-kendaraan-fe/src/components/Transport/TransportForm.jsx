@@ -2,11 +2,13 @@
 
 import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import 'sweetalert2/src/sweetalert2.scss';
 import api from '../../utils/axios';
 
-const TransportForm = ({ id }) => {
+const TransportForm = () => {
+    const { id } = useParams();
+
     const [transportItem, setTransportItem] = useState({
         name: '',
         type: 'angkutan_orang', // Default type set to 'angkutan_orang'

@@ -19,50 +19,53 @@ const index = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [dataUser, setDataUser] = useState({});
+  const [dataUser, setDataUser] = useState();
   const [errorMessage, setErrorMessage] = useState("");
 
   const router = useRouter();
   const handleLogin = async () => {
     setIsLoading(true);
     setIsError(false);
-    const userData = {
-      email,
-      password,
-    };
+    setErrorMessage("");
+    const userData = { email, password };
+
     try {
       const fetchLogin = await UserLogin(userData);
-      let dataUser = {};
-        const fetchProfile = async () => {
-        const token = getTokenCookie()
-          const userProfile = await axios.get(
-            `${process.env.NEXT_PUBLIC_API}/api/me`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
-          dataUser = userProfile.data.data;
-        };
-      fetchProfile();
-      setTimeout(() => {
-        setIsLoading(false);
-        if (fetchLogin?.status === true && dataUser) {
-          setIsSuccess(true);
-          if (dataUser.role === "admin") {
-            router.push("/admin");
-          } else if (dataUser.role === "user") {
-            router.push("/user");
+
+      if (fetchLogin?.status === true) {
+        const token = getTokenCookie();
+        const userProfile = await axios.get(
+          `${process.env.NEXT_PUBLIC_API}/api/me`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           }
-          setIsError(false);
-        } else {
-          setIsError(true);
+        );
+
+        setDataUser(userProfile?.data?.data);
+
+        const userRole = userProfile?.data?.data?.role;
+        if (userRole === "admin") {
+          router.push("/admin");
+        } else if (userRole === "user") {
+          router.push("/user");
         }
-      }, 3000);
+        setIsSuccess(true);
+      } else {
+        setIsError(true);
+        setErrorMessage(
+          fetchLogin?.message || "Login failed. Please try again."
+        );
+      }
     } catch (error) {
-      console.log(error);
+      console.error("Login error:", error);
       setIsError(true);
+      setErrorMessage(
+        error.response?.data?.message || "An error occurred during login."
+      );
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -154,7 +157,11 @@ const index = () => {
               </div>
             </div>
           )}
-          {isLoading && <div className="flex justify-center"><SpinnerLoading /></div>}
+          {isLoading && (
+            <div className="flex justify-center">
+              <SpinnerLoading />
+            </div>
+          )}
           <div className="flex justify-center mt-6">
             <button
               className="bg-orange-600 py-2 text-white font-semibold rounded-md w-[13rem] hover:bg-orange-700 active:bg-orange-800 focus:outline-none focus:ring focus:ring-orange-200"

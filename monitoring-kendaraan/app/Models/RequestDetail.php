@@ -18,7 +18,7 @@ class RequestDetail extends Model
 
     public function request()
 	{
-		return $this->belongsTo(RequestDetail::class, 'request_id');
+		return $this->belongsTo(UsageRequest::class, 'request_id');
 	}
 
     public function approver()

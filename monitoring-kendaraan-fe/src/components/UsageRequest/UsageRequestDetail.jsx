@@ -95,14 +95,15 @@ const UsageRequestDetail = () => {
         <div className="flex gap-2">
           <button
             className={`bg-[#ff7400] hover:text-[#ff7400] hover:bg-white hover:ring-[#ff7400] hover:ring-2 focus:ring-4 focus:ring-[#ff7400] text-white px-4 py-2 rounded my-3 disabled:bg-[#ff73009f] disabled:hover:bg-none disabled:hover:ring-0 disabled:hover:text-white disabled:cursor-not-allowed`}
-            disabled={usageRequest?.history?.length > 0}
+            disabled={usageRequest?.history?.length > 0 || usageRequest.request_status !== "approve" || usageRequest.usage_status !== "sudah_digunakan"}
             onClick={handleOpenModalLaporan}
           >
             Laporkan Pemakaian
           </button>
           <button
-            className="bg-[#ff7400] hover:text-[#ff7400] hover:bg-white hover:ring-[#ff7400] hover:ring-2 focus:ring-4 focus:ring-[#ff7400] text-white px-4 py-2 rounded my-3"
+            className="bg-[#ff7400] hover:text-[#ff7400] hover:bg-white hover:ring-[#ff7400] hover:ring-2 focus:ring-4 focus:ring-[#ff7400] text-white px-4 py-2 rounded my-3 disabled:bg-[#ff73009f] disabled:hover:bg-none disabled:hover:ring-0 disabled:hover:text-white disabled:cursor-not-allowed"
             onClick={handleOpenModalStatus}
+            disabled={usageRequest?.history?.length > 0 || usageRequest.request_status !== "approve" || usageRequest.usage_status === "sudah_digunakan"}
           >
             Ubah Status Pemakaian
           </button>

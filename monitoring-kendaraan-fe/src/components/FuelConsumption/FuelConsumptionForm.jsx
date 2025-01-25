@@ -2,12 +2,14 @@
 
 import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import 'sweetalert2/src/sweetalert2.scss';
 import api from '../../utils/axios';
 import Select from 'react-select';
 
-const FuelConsumptionForm = ({ id }) => {
+const FuelConsumptionForm = () => {
+    const { id } = useParams();
+
     const [fuelConsumptionItem, setFuelConsumptionItem] = useState({
         date: '',
         final_amount: '',

@@ -203,19 +203,27 @@ const UserList = () => {
                   <td className="border px-4 py-2">{item.name}</td>
                   <td className="border px-4 py-2">{item.email}</td>
                   <td className="border px-4 py-2">{item.role}</td>
-                  <td className="border px-4 py-2 flex justify-center">
-                    <button
-                      className="bg-yellow-500 text-white hover:text-yellow-500 hover:bg-white hover:ring-yellow-600 hover:ring-2 focus:ring-4 focus:ring-yellow-200 px-2 py-1 rounded mr-2"
-                      onClick={() => handleEdit(item.id)}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      className="bg-red-500 text-white hover:text-red-500 hover:bg-white hover:ring-red-700 hover:ring-2 focus:ring-4 focus:ring-red-200 px-2 py-1 rounded"
-                      onClick={() => handleDelete(item.id)}
-                    >
-                      Delete
-                    </button>
+                  <td
+                    className={`${
+                      item.role !== "admin" ? "border" : ""
+                    } "px-4 py-2 flex justify-center`}
+                  >
+                    {item.role !== "admin" && (
+                      <>
+                        <button
+                          className="bg-yellow-500 text-white hover:text-yellow-500 hover:bg-white hover:ring-yellow-600 hover:ring-2 focus:ring-4 focus:ring-yellow-200 px-2 py-1 rounded mr-2"
+                          onClick={() => handleEdit(item.id)}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className="bg-red-500 text-white hover:text-red-500 hover:bg-white hover:ring-red-700 hover:ring-2 focus:ring-4 focus:ring-red-200 px-2 py-1 rounded"
+                          onClick={() => handleDelete(item.id)}
+                        >
+                          Delete
+                        </button>
+                      </>
+                    )}
                   </td>
                 </tr>
               ))}

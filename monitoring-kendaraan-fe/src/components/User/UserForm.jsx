@@ -2,11 +2,13 @@
 
 import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import 'sweetalert2/src/sweetalert2.scss';
 import api from '../../utils/axios';
 
-const UserForm = ({ id }) => {
+const UserForm = () => {
+    const { id } = useParams();
+
     const [userItem, setUserItem] = useState({
         name: '',
         role: 'user', // Default role set to 'user'
